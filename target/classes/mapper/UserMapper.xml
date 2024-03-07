@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace mapper接口 必填 随便填值 防止SQL语句ID重名-->
+<mapper namespace="com.test.mapper.UserMapper">
+    <!--查询前5条数据-->
+    <select id="findUserById" resultType="com.test.pojo.User" >
+        select id,name from test_table limit 1;
+    </select>
+
+    <select id="getMvtByArea" resultType="java.util.Map" parameterType="com.test.pojo.MVTReq">
+        WITH mvtgeom as (
+        SELECT
+        ST_AsMVTGeom (
+        st_transform(st_setSRID(geom, 4326), 3857) ,
+        ST_TileEnvelope(${z}, ${x}, ${y}), 4096, 512, false) as geom FROM points_data
+        )
+        SELECT ST_AsMVT(mvtgeom.*, 'layer', 4096, 'geom',NULL) AS mvt from mvtgeom;
+    </select>
+</mapper>
